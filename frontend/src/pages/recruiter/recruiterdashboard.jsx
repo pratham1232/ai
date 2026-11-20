@@ -9,7 +9,6 @@ import {
 import "./recruiterdashboard.css";
 
 export default function RecruiterDashboard() {
-    const user = JSON.parse(localStorage.getItem("user"));
     const [form, setForm] = useState({ 
         title: "", company: "", description: "", 
         skills: "", location: "Remote", duration: "3 Months" 

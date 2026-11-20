@@ -1,5 +1,5 @@
 import React from "react";
-import { MapPin, ExternalLink, Sparkles, Clock, Briefcase, ChevronRight, CheckCircle2 } from "lucide-react";
+import { MapPin, Sparkles, Clock, Briefcase, ChevronRight, CheckCircle2 } from "lucide-react";
 import "./recommendations.css";
 
 function Recommendations({ results }) {

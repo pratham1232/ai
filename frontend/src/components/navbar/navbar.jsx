@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { BrainCircuit, LogOut, Layout, Activity, UserCircle } from "lucide-react";
+import { BrainCircuit, LogOut, Layout } from "lucide-react";
 import "./navbar.css";
 
 function Navbar() {

@@ -175,12 +175,11 @@ function FeaturesSection() {
 function Home() {
   const [results, setResults]     = useState([]);
   const [isThinking, setIsThinking] = useState(false);
-  const [scrolled, setScrolled]   = useState(false);
   const [showResults, setShowResults] = useState(false);
 
-  // Scroll-aware navbar
+  // Scroll listener
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => {};
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
