@@ -283,7 +283,8 @@ const frontendBuildPath = path.join(__dirname, "../frontend/build");
 if (fs.existsSync(frontendBuildPath)) {
     console.log("📦 Serving frontend build from", frontendBuildPath);
     app.use(express.static(frontendBuildPath));
-    app.get("*", (req, res, next) => {
+    app.use((req, res, next) => {
+        if (req.method !== "GET") return next();
         if (req.path.startsWith("/auth") || req.path.startsWith("/api") || req.path === "/recommend" || req.path === "/internships" || req.path === "/add-internship" || req.path === "/upload-resume" || req.path === "/health") {
             return next();
         }
