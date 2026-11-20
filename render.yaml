@@ -1,46 +1,12 @@
 services:
-  # 1. Fullstack Node.js Backend (Serves API + React Frontend)
   - type: web
-    name: ai-internship-backend
+    name: ai-internship-recommender
     env: node
     plan: free
-    rootDir: backend
-    buildCommand: npm install
-    startCommand: node server.js
+    buildCommand: npm run build
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 5000
-      - key: DATABASE_URL
-        fromDatabase:
-          name: internship-mysql
-          property: connectionString
-      - key: AI_ENGINE_URL
-        fromService:
-          type: web
-          name: ai-internship-ai-engine
-          property: host
-
-  # 2. Python AI Recommendation Engine
-  - type: web
-    name: ai-internship-ai-engine
-    env: python
-    plan: free
-    rootDir: backend/ai-engine
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn --bind 0.0.0.0:$PORT app:app
-    envVars:
-      - key: PORT
-        value: 8000
-      - key: DATABASE_URL
-        fromDatabase:
-          name: internship-mysql
-          property: connectionString
-
-# 3. Cloud MySQL Database
-databases:
-  - name: internship-mysql
-    databaseName: internshipDB
-    user: root
-    plan: free
