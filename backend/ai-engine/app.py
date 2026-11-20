@@ -3,16 +3,23 @@ Improved AI engine.
 - Caches job embeddings in memory (keyed by (id, skills) hash) so we don't
   re-embed thousands of jobs on every request.
 - Returns top 20 matches sorted by similarity.
-- Uses a higher-quality model option via env var AI_MODEL.
+- Supports both local MySQL and Cloud MySQL via DATABASE_URL / environment variables.
 """
 import os
 import hashlib
+import urllib.parse
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import mysql.connector
 import numpy as np
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 app = Flask(__name__)
 CORS(app)
@@ -25,12 +32,33 @@ model = SentenceTransformer(MODEL_NAME)
 _embed_cache: dict[int, tuple[str, np.ndarray]] = {}
 
 def get_db():
-    return mysql.connector.connect(
-        host=os.environ.get("DB_HOST", "localhost"),
-        user=os.environ.get("DB_USER", "root"),
-        password=os.environ.get("DB_PASS", "ranu@1122"),
-        database=os.environ.get("DB_NAME", "internshipdb"),
-    )
+    db_url = os.environ.get("DATABASE_URL") or os.environ.get("MYSQL_URL")
+    if db_url:
+        parsed = urllib.parse.urlparse(db_url)
+        is_cloud = parsed.hostname not in ["localhost", "127.0.0.1"]
+        conn_kwargs = {
+            "host": parsed.hostname,
+            "port": parsed.port or 3306,
+            "user": urllib.parse.unquote(parsed.username or ""),
+            "password": urllib.parse.unquote(parsed.password or ""),
+            "database": parsed.path.lstrip("/"),
+        }
+        if is_cloud:
+            conn_kwargs["ssl_disabled"] = False
+        return mysql.connector.connect(**conn_kwargs)
+
+    host = os.environ.get("DB_HOST", "localhost")
+    is_cloud = host not in ["localhost", "127.0.0.1"]
+    conn_kwargs = {
+        "host": host,
+        "port": int(os.environ.get("DB_PORT", 3306)),
+        "user": os.environ.get("DB_USER", "root"),
+        "password": os.environ.get("DB_PASS", "ranu@1122"),
+        "database": os.environ.get("DB_NAME", "internshipDB"),
+    }
+    if is_cloud:
+        conn_kwargs["ssl_disabled"] = False
+    return mysql.connector.connect(**conn_kwargs)
 
 def hash_skills(s: str) -> str:
     return hashlib.md5(s.encode("utf-8")).hexdigest()
@@ -86,6 +114,7 @@ def recommend():
         results.sort(key=lambda r: r["score"], reverse=True)
         return jsonify({"recommendations": results[:20]})
     except Exception as e:
+        print(f"Recommend error: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route("/health")
@@ -93,4 +122,5 @@ def health():
     return {"ok": True, "model": MODEL_NAME, "cached_jobs": len(_embed_cache)}
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))
+    app.run(host="0.0.0.0", port=port)

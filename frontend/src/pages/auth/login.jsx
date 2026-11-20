@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import API from "../../services/api";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "./auth";
 import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
@@ -14,7 +14,7 @@ function Login() {
         e.preventDefault();
         setIsLoading(true);
         try {
-            const res = await axios.post("http://localhost:5000/auth/login", form);
+            const res = await API.post("/auth/login", form);
             localStorage.setItem("token", res.data.token);
             localStorage.setItem("user", JSON.stringify(res.data.user));
             

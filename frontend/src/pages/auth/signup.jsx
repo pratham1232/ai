@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import API from "../../services/api";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "./auth";
 import { 
@@ -24,7 +24,7 @@ function Signup() {
         try {
             // Ensure role is lowercase for database compatibility
             const payload = { ...form, role: form.role.toLowerCase() };
-            const res = await axios.post("http://localhost:5000/auth/signup", payload);
+            await API.post("/auth/signup", payload);
             
             alert("Account Initialized successfully! 🚀");
             navigate("/login");

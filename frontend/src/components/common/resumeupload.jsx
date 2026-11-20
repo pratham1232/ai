@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import API from "../../services/api";
 import { UploadCloud, FileText, CheckCircle, RefreshCcw } from "lucide-react";
 import "./resumeupload.css";
 
@@ -21,11 +21,11 @@ function ResumeUpload({ setResults }) {
 
         try {
             // 1. Upload Resume to get extracted skills from NLP
-            const uploadRes = await axios.post("http://localhost:5000/upload-resume", formData);
+            const uploadRes = await API.post("/upload-resume", formData);
             const extractedSkills = uploadRes.data.skills;
 
             // 2. Automatically call the recommendation engine with those skills
-            const recommendRes = await axios.post("http://localhost:5000/recommend", { 
+            const recommendRes = await API.post("/recommend", { 
                 skills: extractedSkills 
             });
 

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { Search, Sparkles, Command, Cpu, Zap } from "lucide-react";
+import API from "../../services/api";
+import { Sparkles, Command, Cpu, Zap } from "lucide-react";
 import "./skillinput.css";
 
 function SkillInput({ setResults }) {
@@ -12,7 +12,7 @@ function SkillInput({ setResults }) {
         setLoading(true);
         try {
             const skillsArray = skills.split(",").map(s => s.trim());
-            const res = await axios.post("http://localhost:5000/recommend", { skills: skillsArray });
+            const res = await API.post("/recommend", { skills: skillsArray });
             
             if (res.data && res.data.recommendations) {
                 setResults(res.data.recommendations);

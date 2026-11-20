@@ -8,6 +8,7 @@ const Internship = sequelize.define("Internship", {
   skills:      { type: DataTypes.STRING, allowNull: false },
   location:    { type: DataTypes.STRING },
   duration:    { type: DataTypes.STRING },
+  apply_link:  { type: DataTypes.STRING },
 });
 
 module.exports = Internship;
