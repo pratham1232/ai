@@ -279,8 +279,14 @@ app.get("/api/admin/sync-real-jobs", async (req, res) => {
 }); 
 
 // ✅ 9. SERVE FRONTEND STATIC BUILD IN PRODUCTION
-const frontendBuildPath = path.join(__dirname, "../frontend/build");
-if (fs.existsSync(frontendBuildPath)) {
+const candidates = [
+    path.join(__dirname, "../frontend/build"),
+    path.join(process.cwd(), "frontend/build"),
+    path.join(__dirname, "frontend/build")
+];
+const frontendBuildPath = candidates.find(p => fs.existsSync(p));
+
+if (frontendBuildPath) {
     console.log("📦 Serving frontend build from", frontendBuildPath);
     app.use(express.static(frontendBuildPath));
     app.use((req, res, next) => {
